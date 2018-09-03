@@ -3,6 +3,10 @@
  */
 
 
+
+const deck = document.querySelector('.deck');
+//Deck variable contains the class called deck, not the data. 
+
 /*
  * Display the cards on the page
  *   - shuffle the list of cards using the provided "shuffle" method below
@@ -10,8 +14,23 @@
  *   - add each card's HTML to the page
  */
 
+function shuffleDeck() { //function will [NEED MANNY TO HELP EXPLAIN THIS FUNCTION]
+    //const cardsToShuffle = document.querySelectorAll('.deck li'); 
+    const cardsToShuffle = Array.from(document.querySelectorAll('.deck li'));
+    //This variable stores all the li elements inside a div with the "deck" class.
+    //By using the Array.from() method, we create a new copied array from the array-like object, in this case, the NodeList we make.
+    console.log('Cards to shuffle', cardsToShuffle);
+    const shuffledCards = shuffle(cardsToShuffle);
+    //variable stores the result of passing my "array?" or NodeList into the shuffle function.
+    console.log('Shuffled cards', shuffledCards);
+    for (card of shuffledCards) { //This for loop moves the cards around
+        deck.appendChild(card);
+    }
+}
+shuffleDeck();
+
 // Shuffle function from http://stackoverflow.com/a/2450976
-function shuffle(array) {
+function shuffle(array) { //function will shuffle the cards.
     var currentIndex = array.length,
         temporaryValue, randomIndex;
 
@@ -26,9 +45,6 @@ function shuffle(array) {
     return array;
 }
 //const cards = document.querySelectorAll('.card');
-const deck = document.querySelector('.deck');
-//Deck variable contains the class called deck, not the data. 
-
 
 /* deck.addEventListener('click', event => { //This event listener looks out for click events
     const clickTarget = event.target; //clickTarget variable is constant and it defines the action after you click an event
