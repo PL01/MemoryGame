@@ -2,8 +2,6 @@
  * Create a list that holds all of your cards
  */
 
-
-
 const deck = document.querySelector('.deck');
 //Deck variable contains the class called deck, not the data. 
 
@@ -14,23 +12,25 @@ const deck = document.querySelector('.deck');
  *   - add each card's HTML to the page
  */
 
-function shuffleDeck() { //function will [NEED MANNY TO HELP EXPLAIN THIS FUNCTION]
-    //const cardsToShuffle = document.querySelectorAll('.deck li'); 
+function shuffleDeck() { //function will make the array that passes the cards into the shuffle function 
     const cardsToShuffle = Array.from(document.querySelectorAll('.deck li'));
-    //This variable stores all the li elements inside a div with the "deck" class.
+
+    //variable stores all the li elements inside a div with the "deck" class.
     //By using the Array.from() method, we create a new copied array from the array-like object, in this case, the NodeList we make.
     console.log('Cards to shuffle', cardsToShuffle);
     const shuffledCards = shuffle(cardsToShuffle);
+
     //variable stores the result of passing my "array?" or NodeList into the shuffle function.
     console.log('Shuffled cards', shuffledCards);
-    for (card of shuffledCards) { //This for loop moves the cards around
+
+    for (card of shuffledCards) {
         deck.appendChild(card);
     }
 }
 shuffleDeck();
 
 // Shuffle function from http://stackoverflow.com/a/2450976
-function shuffle(array) { //function will shuffle the cards.
+function shuffle(array) { //function will randomly change the positions.
     var currentIndex = array.length,
         temporaryValue, randomIndex;
 
@@ -46,18 +46,32 @@ function shuffle(array) { //function will shuffle the cards.
 }
 //const cards = document.querySelectorAll('.card');
 
-/* deck.addEventListener('click', event => { //This event listener looks out for click events
-    const clickTarget = event.target; //clickTarget variable is constant and it defines the action after you click an event
-    if (clickTarget.classList.contains('card') && toggledCards.length < 2 && !toggledCards.includes(clickTarget)) {
-        toggleCard(clickTarget);
-        addToggleCard(clickTarget);
-        if (toggledCards.length === 2) {
-            //console.log('2 Cards!');
-            checkForMatch(clickTarget)
+let moves = 0;
+
+function addMove() { //functions keeps track of player's moves
+    moves++;
+    const movesText = document.querySelector('.moves');
+    movesText.innerHTML = moves;
+}
+
+function checkScore() { //Keeps track of player's score with each move
+    if (moves === 16 || moves === 24) {
+        hideStar();
+    }
+}
+
+function hideStar() { //function hides the star on the page using a style property. 
+    const starList = document.querySelectorAll('.stars li');
+    for (star of starList) {
+        if (star.style.display !== 'none') {
+            star.style.display = 'none';
+            break;
         }
     }
-    //If statement calls for the clickTarget var which calls the classList, which calls the class that contains the string card AND checks for the array toggledCards length to be less than 2. toggledCard(clickTarget) is a function that opens and shows the card that we click on. addToggleCard(clickTarget) is a function that pushes the data of the card we click on into the array. Once the array has 2 cards, the next if statement checks if the length of the array toggledCards is 2 and in the console, it tells us that we have "2 Cards!".
-}); */
+    /*
+     If the element already has the display style of none, skip it, otherwise, proceed to the next star, set it’s display = 'none', and break. This will allow us to only remove a single star at a time, while maintaining previously removed stars.
+    */
+}
 
 deck.addEventListener('click', event => { //This event listener looks out for click events
     const clickTarget = event.target; //clickTarget variable is constant and it defines the action after you click an event
@@ -65,7 +79,9 @@ deck.addEventListener('click', event => { //This event listener looks out for cl
         toggleCard(clickTarget);
         addToggleCard(clickTarget);
         if (toggledCards.length === 2) {
-            checkForMatch(clickTarget)
+            checkForMatch(clickTarget);
+            addMove();
+            checkScore();
         }
     }
     /*
