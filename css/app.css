@@ -112,7 +112,7 @@ h1 {
 }
 
 
-/* Modal Stats CSS */
+/* Styles for the Modal Stats */
 
 .modal_background {
     position: absolute;
@@ -126,7 +126,6 @@ h1 {
 .modal_body {
     position: relative;
     width: 400px;
-    /* height: 400px; */
     top: 50%;
     left: 50%;
     background: #ffffff;
@@ -137,13 +136,8 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 0 1.5rem;
+    padding: 0 10.3rem;
     border-bottom: 1px solid gray;
-}
-
-.modal_close {
-    font-weight: bold;
-    font-size: 2rem;
 }
 
 .modal_stats {

@@ -1,7 +1,3 @@
-/*
- * Create a list that holds all of your cards
- */
-
 // Global Variables
 const deck = document.querySelector('.deck'); //Deck variable contains the class called deck, not the data.
 let toggledCards = []; //empty array that will contain the card information.
@@ -21,7 +17,7 @@ function shuffleDeck() { //function will make the array that passes the cards in
         deck.appendChild(card);
     }
 }
-shuffleDeck();
+shuffleDeck(); //When the game starts, this function happens first.
 
 /*
  * Display the cards on the page
@@ -45,7 +41,6 @@ function shuffle(array) { //function will randomly change the positions.
 
     return array;
 }
-//const cards = document.querySelectorAll('.card');
 
 function addMove() { //functions keeps track of player's moves
     moves++;
@@ -54,7 +49,7 @@ function addMove() { //functions keeps track of player's moves
 }
 
 function checkScore() { //Keeps track of player's score with each move
-    if (moves === 16 || moves === 24) {
+    if (moves === 16 || moves === 24) { //if the number of moves reaches 16 or 24, it calls the hideStar function each time.
         hideStar();
     }
 }
@@ -67,37 +62,28 @@ function hideStar() { //function hides the star on the page using a style proper
             break;
         }
     }
-    /*
-    If the element already has the display style of none, skip it, otherwise, proceed to the next star, set it’s display = 'none', and break. This will allow us to only remove a single star at a time, while maintaining previously removed stars.
-    */
 }
 
-//Start The Clock
-function startClock() {
+function startClock() { //function starts the clock, and uses the displayTime function to record it
     clockId = setInterval(() => {
         time++;
         displayTime();
-        //console.log(time);
     }, 1000);
 }
 
-//Stop The Clock
-function stopClock() {
+function stopClock() { //function ends the timer by using a clearInterval method. 
     clearInterval(clockId);
 }
 
-//Display The Clock's Time
-function displayTime() {
+function displayTime() { //function makes variables that calculates the minutes and seconds, and manipulates the DOM to display them.
     const clock = document.querySelector('.clock');
-    //console.log(clock);
     clock.innerHTML = time;
     const minutes = Math.floor(time / 60);
     const seconds = time % 60;
-    if (seconds < 10) {
+    if (seconds < 10) { //if the seconds is less than 10 (2-digit numbers), then it will display the minutes and seconds (from 0-9)
         clock.innerHTML = `${minutes}:0${seconds}`;
-    } else {
+    } else { // Or else it'll display the minutes and seconds (numbers > 9)
         clock.innerHTML = `${minutes}:${seconds}`;
-
     }
 }
 
@@ -111,18 +97,28 @@ deck.addEventListener('click', event => { //This event listener looks out for cl
         toggleCard(clickTarget);
         addToggleCard(clickTarget);
         if (toggledCards.length === 2) {
-            //checkForMatch(clickTarget);
+            addMove(); //This goes before checkForMatch because I need to count all my moves before I find a pair that matches.
             checkForMatch();
-            addMove();
             checkScore();
         }
     }
-    /*
-    Originally, our first if statement had several conditions. It looked too busy and so we made a function;
-    isClickValid checks these conditions based on what the clickTarget is. Then we toggleCard, addToggleCard, 
-    and if the togleCards array has length of 2, then we checkForMatch
-    */
 });
+
+/*
+    Originally in this eventListner, our first if statement had several conditions. 
+    It looked too busy and so we made a function; isClickValid checks these conditions 
+    based on what the clickTarget is. Then we toggleCard, addToggleCard, and if the togleCards 
+    array has length of 2, then we checkForMatch.
+*/
+
+function isClickValid(clickTarget) {
+    return (
+        clickTarget.classList.contains('card') &&
+        !clickTarget.classList.contains('match') &&
+        toggledCards.length < 2 &&
+        !toggledCards.includes(clickTarget)
+    );
+}
 
 function toggleCard(card) { //function that open and shows the card. card is a paramater for the data that we insert.
     card.classList.toggle('open');
@@ -161,15 +157,6 @@ function checkForMatch() { //function checks to see if cards from the deck that 
     before closing and hiding them again.*/
 }
 
-function isClickValid(clickTarget) {
-    return (
-        clickTarget.classList.contains('card') &&
-        !clickTarget.classList.contains('match') &&
-        toggledCards.length < 2 &&
-        !toggledCards.includes(clickTarget)
-    );
-}
-
 function toggleModal() { //function displays the stats
     const modal = document.querySelector('.modal_background');
     modal.classList.toggle('hide');
@@ -181,14 +168,18 @@ function writeModalStats() { //function records the stats of the game
     const movesStat = document.querySelector('.modal_moves');
     const starsStat = document.querySelector('.modal_stars');
     const stars = getStars();
+    //Local variables that grab the data associated with the game's time, moves, and stars. 
 
     timeStat.innerHTML = `Time: ${clockTime}`;
     movesStat.innerHTML = `Moves: ${moves}`;
     starsStat.innerHTML = `Stars: ${stars}`;
-
+    /*
+    These three lines of code are manipulating the DOM to insert and display 
+    the times, moves, and stars that is counted as you played in the game.
+    */
 }
 
-function getStars() {
+function getStars() { //function grabs the number of stars from its current state at the end of the gameplay.
     stars = document.querySelectorAll('.stars li');
     starCount = 0;
     for (star of stars) {
@@ -203,15 +194,13 @@ document.querySelector('.modal_cancel').addEventListener('click', () => {
     toggleModal();
 }); //This closes the modal when you click on the cancel button.
 
-document.querySelector('.modal_replay').addEventListener('click', () => {
-    //console.log('replay');
-});
-
-function resetGame() { // function resets the game
+function resetGame() { //function calls other functions with the purpose to reset the game and its properties to its original state 
     resetClockAndTime();
     resetMoves();
     resetStars();
+    resetCards();
     shuffleDeck();
+    matched = 0; //This resets the matches variable to 0.
 }
 
 function resetClockAndTime() {
@@ -235,20 +224,23 @@ function resetStars() { //function resets stars = 0 and loops through starlist t
 }
 
 document.querySelector('.restart').addEventListener('click', resetGame);
-document.querySelector('.modal_replay').addEventListener('click', replayGame);
+//Event listener for the restart/refresh button.
 
-function gameOver() {
+document.querySelector('.modal_replay').addEventListener('click', replayGame);
+//Event listner for the replay button on the modal after the game is over.
+
+function gameOver() { //function calls other functions to stop the Clock/timer and record the stats of the gameplay.
     stopClock();
     writeModalStats();
     toggleModal();
 }
 
-function replayGame() {
+function replayGame() { //function calls other functions to reset the game and close the modal.
     resetGame();
     toggleModal();
 }
 
-function resetCards() {
+function resetCards() { //function turns down the cards to their original state.
     const cards = document.querySelectorAll('.deck li');
     for (let card of cards) {
         card.className = 'card';
