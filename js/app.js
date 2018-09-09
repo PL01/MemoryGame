@@ -199,6 +199,7 @@ function resetGame() { //function calls other functions with the purpose to rese
     resetMoves();
     resetStars();
     resetCards();
+    toggledCards = [];
     shuffleDeck();
     matched = 0; //This resets the matches variable to 0.
 }
