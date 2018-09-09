@@ -5,9 +5,9 @@
 * [Instructions](#instructions)
 * [Contributing](#contributing)
 * [Gameplay](#gameplay)
-* [Notes](#notes)
+* [Author's Notes](#notes)
 * [Conclusion](#conclusion)
-* [List of Depedencies](#dependencies)
+* [List of Dependecies](#dependencies)
 
 ## Instructions
 
