@@ -7,7 +7,7 @@
 * [Gameplay](#gameplay)
 * [Author's Notes](#notes)
 * [Conclusion](#conclusion)
-* [List of Dependecies](#listofdependencies)
+* [Dependencies](#dependencies)
 
 ## Instructions
 
@@ -41,6 +41,6 @@ For this project, I had to look up a walkthrough that helped to explain how the 
 This was a challenging project and fun to go through, but if you follow any walk throughs or tutorials, keep in mind that sometimes you'll be met with missing components and serious bugs, so it'll require some extra thinking and asking others for help. I can say that I finally made a game with JavaScript, HTML, and CSS.
 
 
-## List of Dependences
+## Dependencies
 * Use of the font-awesome library for CSS
 * Use of Stack Overflow to shuffle list of cards
