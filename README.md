@@ -7,7 +7,7 @@
 * [Gameplay](#gameplay)
 * [Author's Notes](#notes)
 * [Conclusion](#conclusion)
-* [List of Dependecies](#dependencies)
+* [List of Dependecies](#list_of_dependencies)
 
 ## Instructions
 
