@@ -2,8 +2,26 @@
  * Create a list that holds all of your cards
  */
 
-const deck = document.querySelector('.deck');
-//Deck variable contains the class called deck, not the data. 
+// Global Variables
+const deck = document.querySelector('.deck'); //Deck variable contains the class called deck, not the data.
+let toggledCards = []; //empty array that will contain the card information.
+let moves = 0;
+let clockOff = true;
+let time = 0;
+let clockId;
+let matched = 0;
+
+function shuffleDeck() { //function will make the array that passes the cards into the shuffle function 
+    const cardsToShuffle = Array.from(document.querySelectorAll('.deck li'));
+    //variable stores all the li elements inside a div with the "deck" class.
+    //By using the Array.from() method, we create a new copied array from the array-like object, in this case, the NodeList we make.
+    const shuffledCards = shuffle(cardsToShuffle);
+    //variable stores the result of passing my "array?" or NodeList into the shuffle function.
+    for (card of shuffledCards) {
+        deck.appendChild(card);
+    }
+}
+shuffleDeck();
 
 /*
  * Display the cards on the page
@@ -11,23 +29,6 @@ const deck = document.querySelector('.deck');
  *   - loop through each card and create its HTML
  *   - add each card's HTML to the page
  */
-
-function shuffleDeck() { //function will make the array that passes the cards into the shuffle function 
-    const cardsToShuffle = Array.from(document.querySelectorAll('.deck li'));
-
-    //variable stores all the li elements inside a div with the "deck" class.
-    //By using the Array.from() method, we create a new copied array from the array-like object, in this case, the NodeList we make.
-    console.log('Cards to shuffle', cardsToShuffle);
-    const shuffledCards = shuffle(cardsToShuffle);
-
-    //variable stores the result of passing my "array?" or NodeList into the shuffle function.
-    console.log('Shuffled cards', shuffledCards);
-
-    for (card of shuffledCards) {
-        deck.appendChild(card);
-    }
-}
-shuffleDeck();
 
 // Shuffle function from http://stackoverflow.com/a/2450976
 function shuffle(array) { //function will randomly change the positions.
@@ -45,8 +46,6 @@ function shuffle(array) { //function will randomly change the positions.
     return array;
 }
 //const cards = document.querySelectorAll('.card');
-
-let moves = 0;
 
 function addMove() { //functions keeps track of player's moves
     moves++;
@@ -69,17 +68,51 @@ function hideStar() { //function hides the star on the page using a style proper
         }
     }
     /*
-     If the element already has the display style of none, skip it, otherwise, proceed to the next star, set it’s display = 'none', and break. This will allow us to only remove a single star at a time, while maintaining previously removed stars.
+    If the element already has the display style of none, skip it, otherwise, proceed to the next star, set it’s display = 'none', and break. This will allow us to only remove a single star at a time, while maintaining previously removed stars.
     */
+}
+
+//Start The Clock
+function startClock() {
+    clockId = setInterval(() => {
+        time++;
+        displayTime();
+        //console.log(time);
+    }, 1000);
+}
+
+//Stop The Clock
+function stopClock() {
+    clearInterval(clockId);
+}
+
+//Display The Clock's Time
+function displayTime() {
+    const clock = document.querySelector('.clock');
+    //console.log(clock);
+    clock.innerHTML = time;
+    const minutes = Math.floor(time / 60);
+    const seconds = time % 60;
+    if (seconds < 10) {
+        clock.innerHTML = `${minutes}:0${seconds}`;
+    } else {
+        clock.innerHTML = `${minutes}:${seconds}`;
+
+    }
 }
 
 deck.addEventListener('click', event => { //This event listener looks out for click events
     const clickTarget = event.target; //clickTarget variable is constant and it defines the action after you click an event
     if (isClickValid(clickTarget)) {
+        if (clockOff) {
+            startClock();
+            clockOff = false;
+        }
         toggleCard(clickTarget);
         addToggleCard(clickTarget);
         if (toggledCards.length === 2) {
-            checkForMatch(clickTarget);
+            //checkForMatch(clickTarget);
+            checkForMatch();
             addMove();
             checkScore();
         }
@@ -101,13 +134,19 @@ function addToggleCard(clickTarget) { //function that pushes the data of the car
     console.log(toggledCards);
 }
 
-let toggledCards = []; //empty array that will contain the card information.
+function checkForMatch() { //function checks to see if cards from the deck that we click on, which go into the array, match or don't match.    
+    const TOTAL_PAIRS = 8;
 
-function checkForMatch() { //function checks to see if cards from the deck that we click on, which go into the array, match or don't match.
     if (toggledCards[0].firstElementChild.className === toggledCards[1].firstElementChild.className) {
         toggledCards[0].classList.toggle('match');
         toggledCards[1].classList.toggle('match');
         toggledCards = []; //After we match the positions, it emptys the array.
+        matched++;
+        console.log(matched);
+        if (matched === TOTAL_PAIRS) {
+            gameOver();
+            console.log("Game Over!");
+        }
 
     } else {
         setTimeout(() => {
@@ -122,13 +161,100 @@ function checkForMatch() { //function checks to see if cards from the deck that 
     before closing and hiding them again.*/
 }
 
-
 function isClickValid(clickTarget) {
     return (
-        clickTarget.classList.contains('card') && !clickTarget.classList.contains('match') &&
-        toggledCards.length < 2 && !toggledCards.includes(clickTarget)
+        clickTarget.classList.contains('card') &&
+        !clickTarget.classList.contains('match') &&
+        toggledCards.length < 2 &&
+        !toggledCards.includes(clickTarget)
     );
 }
+
+function toggleModal() { //function displays the stats
+    const modal = document.querySelector('.modal_background');
+    modal.classList.toggle('hide');
+}
+
+function writeModalStats() { //function records the stats of the game
+    const timeStat = document.querySelector('.modal_time');
+    const clockTime = document.querySelector('.clock').innerHTML;
+    const movesStat = document.querySelector('.modal_moves');
+    const starsStat = document.querySelector('.modal_stars');
+    const stars = getStars();
+
+    timeStat.innerHTML = `Time: ${clockTime}`;
+    movesStat.innerHTML = `Moves: ${moves}`;
+    starsStat.innerHTML = `Stars: ${stars}`;
+
+}
+
+function getStars() {
+    stars = document.querySelectorAll('.stars li');
+    starCount = 0;
+    for (star of stars) {
+        if (star.style.display !== 'none') {
+            starCount++;
+        }
+    }
+    return starCount;
+}
+
+document.querySelector('.modal_cancel').addEventListener('click', () => {
+    toggleModal();
+}); //This closes the modal when you click on the cancel button.
+
+document.querySelector('.modal_replay').addEventListener('click', () => {
+    //console.log('replay');
+});
+
+function resetGame() { // function resets the game
+    resetClockAndTime();
+    resetMoves();
+    resetStars();
+    shuffleDeck();
+}
+
+function resetClockAndTime() {
+    stopClock();
+    clockOff = true;
+    time = 0;
+    displayTime();
+}
+
+function resetMoves() { //function resets moves = 0 & sets display of moves to 0
+    moves = 0;
+    document.querySelector('.moves').innerHTML = moves;
+}
+
+function resetStars() { //function resets stars = 0 and loops through starlist to set its display property as inline 
+    stars = 0;
+    const starList = document.querySelectorAll('.stars li');
+    for (star of starList) {
+        star.style.display = 'inline';
+    }
+}
+
+document.querySelector('.restart').addEventListener('click', resetGame);
+document.querySelector('.modal_replay').addEventListener('click', replayGame);
+
+function gameOver() {
+    stopClock();
+    writeModalStats();
+    toggleModal();
+}
+
+function replayGame() {
+    resetGame();
+    toggleModal();
+}
+
+function resetCards() {
+    const cards = document.querySelectorAll('.deck li');
+    for (let card of cards) {
+        card.className = 'card';
+    }
+}
+
 /*When one clicks on a card, the isClickValid function returns a set of conditions that check for the following: 
 "is it a card?"
 "does it NOT contain a "match" class?"
